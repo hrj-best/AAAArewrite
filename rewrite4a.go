@@ -23,12 +23,12 @@ func (r4a Rewrite4A) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.
 	// 解析客户端 IPv4
 	clientIP := net.ParseIP(state.IP()).To4()
 	if clientIP == nil {
-		return plugin.NextOrFailure(r4a.Name(), r4a.Next, ctx, w, r) // 继续下一个插件
+		return dns.RcodeServerFailure, nil // 如果获取失败，直接返回
 	}
 
 	// 确保 r 不为空，并且包含 AAAA 记录
 	if r == nil || len(r.Answer) == 0 {
-		return plugin.NextOrFailure(r4a.Name(), r4a.Next, ctx, w, r)
+		return dns.RcodeServerFailure, nil // 如果获取失败，直接返回
 	}
 
 	// 遍历 Answer 部分，找到 AAAA 记录
